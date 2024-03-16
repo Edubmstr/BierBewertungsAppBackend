@@ -34,6 +34,6 @@ app.get('/getentry/:id', (req, res) => {
 });  
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://127.0.0.1:${port}`)
+    console.log(`Example app listening at https://hbierbewertungsappbackend-production.up.railway.app:${port}`)
 });
 
