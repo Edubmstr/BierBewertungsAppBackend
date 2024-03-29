@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import dotenv from 'dotenv';
 import mysql from 'mysql2';
 //import bcrypt from 'bcrypt';
 //import jwt from 'jsonwebtoken'
