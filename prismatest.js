@@ -2,18 +2,18 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
-async function main() {
+/*async function main() {
     const allReviews = await prisma.beerReviewData.findMany();
     //console.log(allReviews);
     return allReviews;
-}
+}*/
 
 export async function getAllReviewData() {
     const allReviews = await prisma.beerReviewData.findMany();
     return allReviews;
 }
 
-main()
+/*main()
   .then(async () => {
     await prisma.$disconnect()
   })
@@ -23,7 +23,7 @@ main()
     process.exit(1)
   })
 
-  let result = null;
+  let result = null;*/
 
   /*try {
     result = await getAllReviewData();
