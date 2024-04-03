@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
 import express from 'express';
 import cors from 'cors';
-import { getAllReviewData } from './prismatest';
+import { getAllReviewData } from '../prismatest';
 const app = express();
 const router = express.Router();
 app.use(cors());
