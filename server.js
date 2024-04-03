@@ -1,11 +1,10 @@
 import dotenv from 'dotenv';
 import mysql from 'mysql2';
-//import bcrypt from 'bcrypt';
-//import jwt from 'jsonwebtoken'
-//import low from 'lowdb';
-//import FileSync from 'lowdb/adapters/FileSync'
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken'
 import express from 'express';
 import cors from 'cors';
+import { getAllReviewData } from './prismatest';
 const app = express();
 const router = express.Router();
 app.use(cors());
@@ -20,10 +19,17 @@ const pool = mysql.createPool(
     process.env.DATABASE_URL
 );
 
-app.get('/getdata', (req, res) => {
-    const result = pool.query('SELECT * FROM beerReviewData', function(err, rows, fields){
+app.get('/getdata', async (req, res) => {
+   /* const result = pool.query('SELECT * FROM beerReviewData', function(err, rows, fields){
         res.send(rows);
-        });
+        });*/
+
+    try {
+        const resultData = await getAllReviewData();
+        res.send(resultData);
+    } catch (error) {
+        res.send(500, error);
+    }
 });  
 
 app.post('/newentry', (req,res) => {
@@ -45,6 +51,19 @@ app.get('/getdata/:user_id', (req, res) => {
         res.send(rows);
         });
 });  
+
+app.post('/newuser', (req,res) => {
+    const { name, password } = req.body;
+
+    const userEntryDb = pool.execute('SELECT * FROM beerAppUser WHERE user_name = ?', [name], function(err, rows, fields){
+       // res.send(rows[0].user_name);
+       if(rows[0]) {
+        res.status(200);
+       }else{
+        res.send(200);
+       }
+    });
+});
 
 /*app.get("/", (_req, res) => {
     res.send("Auth API.\nPlease use POST /auth & POST /verify for authentication")

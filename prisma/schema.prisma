@@ -1,0 +1,47 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model beerAppUser {
+  user_id       Int           @id @default(autoincrement())
+  user_name     String?       @db.VarChar(250)
+  user_password String?       @db.VarChar(250)
+  beerReviews   beerReviews[]
+}
+
+model beerReviews {
+  review_id          Int          @id @unique(map: "id") @default(autoincrement())
+  rating             String?      @db.Text
+  longReview         String?      @db.Text
+  beerName           String?      @db.Text
+  created_at         DateTime     @default(now()) @db.Timestamp(0)
+  shortReview        String?      @db.Text
+  picture_url        String?      @db.Text
+  category           String?      @db.Text
+  brewery            String?      @db.Text
+  created_by_user_id Int?
+  beerAppUser        beerAppUser? @relation(fields: [created_by_user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "beerReviews_beerAppUser_FK")
+
+  @@index([created_by_user_id], map: "beerReviews_beerAppUser_FK")
+}
+
+view beerReviewData {
+  review_id          Int      @default(0) @unique
+  rating             String?  @db.Text
+  longReview         String?  @db.Text
+  beerName           String?  @db.Text
+  created_at         DateTime @default(now()) @db.Timestamp(0)
+  shortReview        String?  @db.Text
+  picture_url        String?  @db.Text
+  category           String?  @db.Text
+  brewery            String?  @db.Text
+  created_by_user_id Int?
+  user_id            Int      @default(0)
+  user_name          String?  @db.VarChar(250)
+}
