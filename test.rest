@@ -17,11 +17,11 @@ Content-Type: application/json
 
 ###
 
-GET http://127.0.0.1:4050/userreviews
+POST http://127.0.0.1:4050/userreviews
 Content-Type: application/json
 
 {
-    "user_id" : 2
+    "user_id" : 1
 }
 
 ###

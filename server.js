@@ -51,7 +51,7 @@ app.get('/getentry', async (req, res) => {
         
 }); 
 
-app.post('/newentry', async (req,res) => {
+app.post('/newentry', async (req, res) => {
     try {
         const resultData = await createNewReview(req.body);
         res.send(resultData);
