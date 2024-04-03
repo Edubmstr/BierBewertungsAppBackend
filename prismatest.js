@@ -25,7 +25,7 @@ main()
 
   let result = null;
 
-  try {
+  /*try {
     result = await getAllReviewData();
     await prisma.$disconnect()
   } catch (e) {
@@ -34,4 +34,4 @@ main()
     process.exit(1)
   }
   
-  console.log(result);
+  console.log(result);*/
