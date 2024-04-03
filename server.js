@@ -30,7 +30,7 @@ app.get('/getdata', async (req, res) => {
     
 });  
 
-app.get('/userreviews', async (req, res) => {
+app.post('/userreviews', async (req, res) => {
     
     try {
         const resultData = await getUserReviews(req.body.user_id);
