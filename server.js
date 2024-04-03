@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
 import express from 'express';
 import cors from 'cors';
-import { getAllReviewData } from './prismatest.js';
+import { getAllReviews, getSingleReviews, getUserReviews, createNewReview } from './prismatest.js';
 const app = express();
 const router = express.Router();
 app.use(cors());
@@ -20,37 +20,45 @@ const pool = mysql.createPool(
 );
 
 app.get('/getdata', async (req, res) => {
-   /* const result = pool.query('SELECT * FROM beerReviewData', function(err, rows, fields){
-        res.send(rows);
-        });*/
 
     try {
-        const resultData = await getAllReviewData();
-        res.send(resultData);
+        const resultData = await getAllReviews();
+        res.send(resultData); 
     } catch (error) {
-        res.send(500, error);
+        res.sendStatus(500);
+    }
+    
+});  
+
+app.get('/userreviews', async (req, res) => {
+    
+    try {
+        const resultData = await getUserReviews(req.body.user_id);
+        res.send(resultData)
+    } catch (error) {
+        res.sendStatus(500);
     }
 });  
 
-app.post('/newentry', (req,res) => {
-    const result = pool.execute('INSERT INTO beerReviews (created_by_user_id, rating, longReview, beerName, shortReview, category, brewery, picture_url) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)', 
-    [req.body.userId, req.body.rating, req.body.longReview, req.body.beerName, req.body.shortReview, req.body.category, req.body.brewery, req.body.pictureUrl], 
-    function(err, rows, fields){
-        res.send(rows);
-    })
-});
+app.get('/getentry', async (req, res) => {
 
-app.get('/getentry/:id', (req, res) => {
-    const result = pool.execute('SELECT * FROM beerReviewData WHERE review_id = ?',[req.params.id], function(err, rows, fields){
-        res.send(rows);
-        });
+    try {
+        const resultData = await getSingleReviews(req.body.id);
+        res.send(resultData)
+    } catch (error) {
+        res.sendStatus(500);
+    }
+        
 }); 
 
-app.get('/getdata/:user_id', (req, res) => {
-    const result = pool.execute('SELECT * FROM beerReviewData WHERE user_id = ?',[req.params.user_id], function(err, rows, fields){
-        res.send(rows);
-        });
-});  
+app.post('/newentry', async (req,res) => {
+    try {
+        const resultData = await createNewReview(req.body);
+        res.send(resultData);
+    } catch (error) {
+        res.sendStatus(500);
+    }
+});
 
 app.post('/newuser', (req,res) => {
     const { name, password } = req.body;

@@ -5,3 +5,29 @@ Content-Type: application/json
     "name" : "Julian",
     "password" : "Password"
 }
+
+###
+
+GET http://127.0.0.1:4050/getentry
+Content-Type: application/json
+
+{
+    "id" : 2
+}
+
+###
+
+GET http://127.0.0.1:4050/userreviews
+Content-Type: application/json
+
+{
+    "user_id" : 2
+}
+
+###
+POST http://127.0.0.1:4050/newentry 
+Content-Type: application/json
+
+{
+    "rating" : "Top"
+}
