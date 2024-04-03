@@ -1,0 +1,7 @@
+POST http://127.0.0.1:4050/newuser
+Content-Type: application/json
+
+{
+    "name" : "Julian",
+    "password" : "Password"
+}
