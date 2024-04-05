@@ -40,7 +40,7 @@ app.post('/userreviews', async (req, res) => {
     }
 });  
 
-app.get('/getentry', async (req, res) => {
+app.post('/getentry', async (req, res) => {
 
     try {
         const resultData = await getSingleReviews(req.body.id);
