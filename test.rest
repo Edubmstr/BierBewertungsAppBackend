@@ -8,11 +8,11 @@ Content-Type: application/json
 
 ###
 
-GET http://127.0.0.1:4050/getentry
+POST http://127.0.0.1:4050/getentry
 Content-Type: application/json
 
 {
-    "id" : 2
+    "id" : 1
 }
 
 ###
@@ -30,4 +30,37 @@ Content-Type: application/json
 
 {
     "rating" : "Top"
+}
+
+###
+
+Post http://127.0.0.1:4050/newuser
+Content-Type: application/json
+
+{
+    "name" : "guest",
+    "password" : "guest",
+    "checkPassword" : "guest"
+}
+
+###
+Post http://127.0.0.1:4050/validateuser
+Content-Type: application/json
+
+{
+    "name" : "guest",
+    "password" : "guest"
+}
+
+###
+Post http://127.0.0.1:4050/verifytoken
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWRtaW4iLCJzaWduSW5UaW1lIjoxNzEyMzEwMDgyMzM2LCJpYXQiOjE3MTIzMTAwODJ9.M3OkQ-ZqFL20cYTAmScJIQnntQ9MFJPjglKzVCmxtqA
+
+###
+
+Post https://bierbewertungsappbackend-production.up.railway.app/getentry
+Content-Type: application/json
+
+{
+    "id" : 3
 }
