@@ -47,6 +47,33 @@ async function createNewReviewFunc(reviewData) {
     return newReview;
 }
 
+async function loginNewUser(userData){
+  const newUser = await prisma.beerAppUser.create({
+    data: {
+      user_name : userData.name,
+      user_password: userData.password
+    }
+  });
+  return newUser;
+}
+
+async function searchUser(userName){
+  const result = await prisma.beerAppUser.findFirst({
+    where: {
+      user_name: userName
+    }
+  });
+  return result;
+}
+
+async function searchUserId(userName){
+  const result = await prisma.beerAppUser.findFirst({
+    where:{
+      user_name : userName
+    }
+  });
+  return result;
+}
 
 export async function getAllReviews() {
     let result = null;
@@ -97,6 +124,55 @@ export async function createNewReview(oBody){
       console.error(error)
       await prisma.$disconnect()
       process.exit(1)
+  }
+}
+
+export async function createNewUser(userData){
+  let result = null;
+  try {
+    result = await loginNewUser(userData);
+    await prisma.$disconnect();
+    return result;
+  } catch (error) {
+    console.log(error);
+    await prisma.$disconnect()
+    process.exit(1)
+  }
+}
+
+export async function checkIfUserNameExists(userName){
+  try {
+    const result = await searchUser(userName);
+    await prisma.$disconnect();
+    return (result === null);
+  } catch (error) {
+    console.log(error);
+    await prisma.$disconnect()
+    process.exit(1)
+  }
+}
+
+export async function getUserPassword(userName){
+  try {
+    const userData = await searchUser(userName);
+    await prisma.$disconnect();
+    return userData.user_password;
+  } catch (error) {
+    console.log(error);
+    await prisma.$disconnect()
+    process.exit(1)
+  }
+}
+
+export async function getUserId(userName){
+  try {
+    const userId = await searchUserId(userName);
+    await prisma.$disconnect();
+    return userId;
+  } catch (error) {
+    console.log(error);
+    await prisma.$disconnect()
+    process.exit(1)
   }
 }
 /*main()
