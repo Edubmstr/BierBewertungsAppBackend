@@ -84,7 +84,7 @@ app.post('/newuser', async (req,res) => {
     }else {
        return res.status(400).send({message : "Passwords do not match"});
     }
-    res.sendStatus(400);
+    res.sendStatus(200);
 });
 
 app.post('/validateuser', async (req,res) => {
