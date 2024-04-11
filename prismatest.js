@@ -35,7 +35,7 @@ async function createNewReviewFunc(reviewData) {
     const newReview = await prisma.beerReviews.create({
       data: {
         created_by_user_id: reviewData.userId,
-        rating: reviewData.rating,
+        rating: parseFloat(reviewData.rating),
         longReview: reviewData.longReview,
         beerName: reviewData.beerName,
         shortReview: reviewData.shortReview,
@@ -80,6 +80,16 @@ async function searchLatestEntries(){
     take: 5,
     orderBy:{
       created_at: 'desc'
+    }
+  });
+  return result;
+}
+
+async function groupByBreweryAndName(){
+  const result = await prisma.beerReviewData.groupBy({
+    by: ['brewery','beerName'],
+    _avg: {
+      rating: true
     }
   });
   return result;
@@ -189,6 +199,18 @@ export async function getUserId(userName){
 export async function getLatestEntries(){
   try {
     const latestEntries = await searchLatestEntries();
+    await prisma.$disconnect();
+    return latestEntries;
+  } catch (error) {
+    console.log(error);
+    await prisma.$disconnect()
+    process.exit(1)
+  }
+}
+
+export async function getCalculatedAverage(){
+  try {
+    const latestEntries = await groupByBreweryAndName();
     await prisma.$disconnect();
     return latestEntries;
   } catch (error) {

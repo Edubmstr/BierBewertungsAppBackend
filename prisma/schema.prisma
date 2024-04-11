@@ -17,7 +17,7 @@ model beerAppUser {
 
 model beerReviews {
   review_id          Int          @id @unique(map: "id") @default(autoincrement())
-  rating             String?      @db.Text
+  rating             Float?       @db.Float
   longReview         String?      @db.Text
   beerName           String?      @db.Text
   created_at         DateTime     @default(now()) @db.Timestamp(0)
@@ -32,8 +32,8 @@ model beerReviews {
 }
 
 view beerReviewData {
-  review_id          Int      @default(0) @unique
-  rating             String?  @db.Text
+  review_id          Int      @unique @default(0)
+  rating             Float?   @db.Float
   longReview         String?  @db.Text
   beerName           String?  @db.Text
   created_at         DateTime @default(now()) @db.Timestamp(0)

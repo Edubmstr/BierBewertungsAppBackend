@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
 import express from 'express';
 import cors from 'cors';
-import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries } from './prismatest.js';
+import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries, getCalculatedAverage } from './prismatest.js';
 const app = express();
 const router = express.Router();
 app.use(cors());
@@ -143,11 +143,20 @@ app.get('/latestentries', async (req, res) => {
 
     try {
         const resultData = await getLatestEntries();
+        return res.send(resultData)
+    } catch (error) {
+        res.sendStatus(500);
+    }    
+}); 
+
+app.get('/calculated', async (req, res) => {
+    
+    try {
+        const resultData = await getCalculatedAverage();
         res.send(resultData)
     } catch (error) {
         res.sendStatus(500);
-    }
-        
+    }    
 }); 
 
 app.listen(port, () => {
