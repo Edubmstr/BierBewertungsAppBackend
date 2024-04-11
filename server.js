@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
 import express from 'express';
 import cors from 'cors';
-import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId } from './prismatest.js';
+import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries } from './prismatest.js';
 const app = express();
 const router = express.Router();
 app.use(cors());
@@ -138,6 +138,17 @@ app.post('/verifytoken', (req, res) => {
         return res.status(401).json({ status: "invalid auth", message: "error" });
       }
 })
+
+app.get('/latestentries', async (req, res) => {
+
+    try {
+        const resultData = await getLatestEntries();
+        res.send(resultData)
+    } catch (error) {
+        res.sendStatus(500);
+    }
+        
+}); 
 
 app.listen(port, () => {
     console.log(`Example app listening at http://127.0.0.1:${port}`)

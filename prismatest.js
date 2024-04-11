@@ -75,6 +75,16 @@ async function searchUserId(userName){
   return result;
 }
 
+async function searchLatestEntries(){
+  const result = await prisma.beerReviews.findMany({
+    take: 5,
+    orderBy:{
+      created_at: 'desc'
+    }
+  });
+  return result;
+}
+
 export async function getAllReviews() {
     let result = null;
     try {
@@ -169,6 +179,18 @@ export async function getUserId(userName){
     const userId = await searchUserId(userName);
     await prisma.$disconnect();
     return userId;
+  } catch (error) {
+    console.log(error);
+    await prisma.$disconnect()
+    process.exit(1)
+  }
+}
+
+export async function getLatestEntries(){
+  try {
+    const latestEntries = await searchLatestEntries();
+    await prisma.$disconnect();
+    return latestEntries;
   } catch (error) {
     console.log(error);
     await prisma.$disconnect()
