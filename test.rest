@@ -38,9 +38,9 @@ Post http://127.0.0.1:4050/newuser
 Content-Type: application/json
 
 {
-    "name" : "guest",
-    "password" : "guest",
-    "checkPassword" : "guest"
+    "name" : "guestTest11",
+    "password" : "",
+    "checkPassword" : ""
 }
 
 ###
@@ -48,8 +48,8 @@ Post http://127.0.0.1:4050/validateuser
 Content-Type: application/json
 
 {
-    "name" : "guest",
-    "password" : "guest"
+    "name" : "Eddi",
+    "password" : "gjwcowjc"
 }
 
 ###
