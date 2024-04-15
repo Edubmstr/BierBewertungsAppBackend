@@ -116,7 +116,7 @@ app.post('/validateuser', async (req,res) => {
             const userId = await getUserId(name);
             const token = jwt.sign(loginData, jwtSecretKey);
             const refreshToken = jwt.sign(loginData, process.env.JWT_REFRESH_SECRET_KEY);
-            res.status(200).json({ message: "Succesfully logged in.", "token" : token, "userId": userId.user_id}).cookie("refreshtoken", refreshToken, { httpOnly: true});
+            res.status(200).json({ message: "Succesfully logged in.", "token" : token, "userId": userId.user_id});
         }
     })
 });
