@@ -73,3 +73,7 @@ Get http://127.0.0.1:4050/calculated
 
 get http://127.0.0.1:4050/getdata
 
+###
+
+Get  https://bierbewertungsappbackend-production.up.railway.app/calculated
+
