@@ -48,8 +48,8 @@ Post http://127.0.0.1:4050/validateuser
 Content-Type: application/json
 
 {
-    "name" : "Eddi",
-    "password" : "gjwcowjc"
+    "name" : "guest",
+    "password" : "guest"
 }
 
 ###
@@ -68,12 +68,43 @@ Content-Type: application/json
 ###
 
 Get http://127.0.0.1:4050/calculated
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWRtaW4iLCJzaWduSW5UaW1lIjoxNzEyMzEwMDgyMzM2LCJpYXQiOjE3MTIzMTAwODJ9.M3OkQ-ZqFL20cYTAmScJIQnntQ9MFJPjglKzVCmxtqA
 
 ###
 
 get http://127.0.0.1:4050/getdata
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWRtaW4iLCJzaWduSW5UaW1lIjoxNzEyMzEwMDgyMzM2LCJpYXQiOjE3MTIzMTAwODJ9.M3OkQ-ZqFL20cYTAmScJIQnntQ9MFJPjglKzVCmxtqA
 
 ###
 
 Get  https://bierbewertungsappbackend-production.up.railway.app/calculated
 
+###
+
+//Auth flow
+Post http://127.0.0.1:4050/validateuser
+Content-Type: application/json
+
+{
+    "name" : "guest",
+    "password" : "guest"
+}
+
+###
+Get http://127.0.0.1:4050/calculated
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZ3Vlc3QiLCJzaWduSW5UaW1lIjoxNzEzNDYwMzkxOTQ0LCJpYXQiOjE3MTM0NjAzOTMsImV4cCI6MTcxMzQ2MDQ1M30.6P5CVVujfdMjDLHFX-KQkZ3p1hkNuQmFFJtfIkkAeU0
+
+
+###
+post http://127.0.0.1:4050/refreshtoken
+Set-Cookie: refreshtoken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZ3Vlc3QiLCJzaWduSW5UaW1lIjoxNzEzNDU5OTcwNTkzLCJpYXQiOjE3MTM0NTk5NzF9.VkUmjWaZuMFbYb3c7-9EjKPSBBQBU8wRgHSRnyjpbeY
+Content-Type: application/json
+
+{
+    "userName" : "guest"
+}
+
+
+###
+Get http://127.0.0.1:4050/calculated
+Authorization: 
