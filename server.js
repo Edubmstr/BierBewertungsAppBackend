@@ -230,7 +230,7 @@ app.post('/refreshtoken', (req, res) => {
         const accessToken = jwt.sign(loginData, jwtSecretKey, {expiresIn: 60});
         const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
 
-        res.cookie("refreshToken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 90000000), secure: true, domain: 'https://super-dieffenbachia-8a48cd.netlify.app/', sameSite: 'none'}).status(200).json({message: "Token refreshed.", token: accessToken})
+        res.cookie("refreshToken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 90000000), secure: true, domain: 'super-dieffenbachia-8a48cd.netlify.app', sameSite: 'none'}).status(200).json({message: "Token refreshed.", token: accessToken})
 })
 
 app.get('/latestentries', async (req, res) => {
