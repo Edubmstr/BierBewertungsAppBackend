@@ -183,9 +183,7 @@ app.post('/validateuser', async (req,res) => {
             const userId = await getUserId(name);
             const token = jwt.sign(loginData, jwtSecretKey, {expiresIn: 60});
             const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
-            res.cookie("refreshtoken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 900000), sameSite: 'None',
-            secure: true,
-            domain: 'https://super-dieffenbachia-8a48cd.netlify.app'});
+            res.cookie("refreshtoken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 900000)});
             return res.status(200).json({ message: "Succesfully logged in.", "token" : token, "userId": userId.user_id});
         }
     })
@@ -232,7 +230,7 @@ app.post('/refreshtoken', (req, res) => {
         const accessToken = jwt.sign(loginData, jwtSecretKey, {expiresIn: 60});
         const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
 
-        res.cookie("refreshToken", refreshToken, {httpOnly: true}).status(200).json({message: "Token refreshed.", token: accessToken})
+        res.cookie("refreshToken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 900000)}).status(200).json({message: "Token refreshed.", token: accessToken})
 })
 
 app.get('/latestentries', async (req, res) => {
