@@ -4,23 +4,55 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries, getCalculatedAverage } from './prismatest.js';
 const app = express();
 const router = express.Router();
-app.use(cors());
+app.use(cors({credentials: true, origin: 'http://127.0.0.1:3000'}));
+app.use(cookieParser());
 app.use(express.json());
 dotenv.config();
 const port = process.env.PORT 
 const jwtSecretKey = process.env.JWT_SECRET_KEY
+const jwtRefreshSecretKey = process.env.JWT_REFRESH_SECRET_KEY
 
 //var adapter = new FileSync("./database.json");
 //var db = low(adapter);
+/*app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept'
+    );
+    next();
+});*/
 
 const pool = mysql.createPool(
     process.env.DATABASE_URL
 );
 
+function checkProvidedAccessToken(token){
+    return jwt.verify(token, jwtSecretKey);
+}
+
+function checkProvidedRefreshToken(token){
+    jwt.verify(token, jwtRefreshSecretKey);
+}
+
 app.get('/getdata', async (req, res) => {
+
+    const authToken = req.headers.authorization;
+
+    if(authToken === undefined){
+        return res.status(401).send("Provide Token");
+    }
+
+    try {
+        checkProvidedAccessToken(authToken)
+    } catch (error) {
+        return res.sendStatus(401);
+    }
 
     try {
         const resultData = await getAllReviews();
@@ -32,6 +64,18 @@ app.get('/getdata', async (req, res) => {
 });  
 
 app.post('/userreviews', async (req, res) => {
+
+    const authToken = req.headers.authorization;
+
+    if(authToken === undefined){
+        return res.status(401).send("Provide Token");
+    }
+
+    try {
+        checkProvidedAccessToken(authToken)
+    } catch (error) {
+        return res.sendStatus(401);
+    }
     
     try {
         const resultData = await getUserReviews(req.body.user_id);
@@ -43,6 +87,18 @@ app.post('/userreviews', async (req, res) => {
 
 app.post('/getentry', async (req, res) => {
 
+    const authToken = req.headers.authorization;
+
+    if(authToken === undefined){
+        return res.status(401).send("Provide Token");
+    }
+
+    try {
+        checkProvidedAccessToken(authToken)
+    } catch (error) {
+        return res.sendStatus(401);
+    }
+
     try {
         const resultData = await getSingleReviews(req.body.id);
         res.send(resultData)
@@ -53,6 +109,17 @@ app.post('/getentry', async (req, res) => {
 }); 
 
 app.post('/newentry', async (req, res) => {
+
+    const authToken = req.headers.authorization;
+
+    if(authToken === undefined){
+        return res.status(401).send("Provide Token");
+    }
+
+    if(!(checkProvidedAccessToken(authToken))){
+        return res.sendStatus(401);
+    }
+
     try {
         const resultData = await createNewReview(req.body);
         res.send(resultData);
@@ -114,14 +181,15 @@ app.post('/validateuser', async (req,res) => {
                 signInTime: Date.now()
             }
             const userId = await getUserId(name);
-            const token = jwt.sign(loginData, jwtSecretKey);
-            //const refreshToken = jwt.sign(loginData, process.env.JWT_REFRESH_SECRET_KEY);
-            res.status(200).json({ message: "Succesfully logged in.", "token" : token, "userId": userId.user_id});
+            const token = jwt.sign(loginData, jwtSecretKey, {expiresIn: 60});
+            const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
+            res.cookie("refreshtoken", refreshToken, {httpOnly: true});
+            return res.status(200).json({ message: "Succesfully logged in.", "token" : token, "userId": userId.user_id});
         }
     })
 });
 
-app.post('/verifytoken', (req, res) => {
+/*app.post('/verifytoken', (req, res) => {
     const tokenHeaderKey = "jwt-token";
     const authToken = req.headers.authorization;
     try {
@@ -138,9 +206,50 @@ app.post('/verifytoken', (req, res) => {
         // Access Denied
         return res.status(401).json({ status: "invalid auth", message: "error" });
       }
+})*/
+
+app.post('/refreshtoken', (req, res) => {
+    const {userName} = req.body;
+
+    const authToken = req.cookies;
+    
+    if(authToken.refreshtoken === undefined){
+        return res.status(401).send("Provide Token");
+    }
+
+    try {
+        checkProvidedRefreshToken(authToken.refreshtoken);
+    } catch (error) {
+        return res.sendStatus(401);
+    }
+    let loginData = {
+        userName,
+        signInTime: Date.now()
+    }
+
+        const accessToken = jwt.sign(loginData, jwtSecretKey, {expiresIn: 60});
+        const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
+
+        res.cookie("refreshToken", refreshToken, {httpOnly: true}).status(200).json({message: "Token refreshed.", token: accessToken})
 })
 
 app.get('/latestentries', async (req, res) => {
+
+    const authToken = req.headers.authorization;
+
+    if(authToken === undefined){
+        return res.status(401).send("Provide Token");
+    }
+
+    try {
+        checkProvidedAccessToken(authToken)
+    } catch (error) {
+        return res.sendStatus(401);
+    }
+    /*
+    if(!(checkProvidedAccessToken(authToken))){
+        return res.sendStatus(401);
+    }*/
 
     try {
         const resultData = await getLatestEntries();
@@ -151,6 +260,23 @@ app.get('/latestentries', async (req, res) => {
 }); 
 
 app.get('/calculated', async (req, res) => {
+    
+
+    const authToken = req.headers.authorization;
+
+    if(authToken === undefined){
+        return res.status(401).send("Provide Token");
+    }
+
+    try {
+        checkProvidedAccessToken(authToken)
+    } catch (error) {
+        return res.sendStatus(401);
+    }
+
+    /*if(!(checkProvidedAccessToken(authToken))){
+        return res.sendStatus(401);
+    }*/
     
     try {
         const resultData = await getCalculatedAverage();
