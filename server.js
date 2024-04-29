@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser';
 import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries, getCalculatedAverage } from './prismatest.js';
 const app = express();
 const router = express.Router();
-app.use(cors({credentials: true, origin: 'https://super-dieffenbachia-8a48cd.netlify.app'}));
+app.use(cors({credentials: true, origin: 'http://127.0.0.1:3001'}));
 app.use(cookieParser());
 app.use(express.json());
 dotenv.config();
@@ -116,7 +116,13 @@ app.post('/newentry', async (req, res) => {
         return res.status(401).send("Provide Token");
     }
 
-    if(!(checkProvidedAccessToken(authToken))){
+    /*if(!(checkProvidedAccessToken(authToken))){
+        return res.sendStatus(401);
+    }*/
+
+    try {
+        checkProvidedAccessToken(authToken)
+    } catch (error) {
         return res.sendStatus(401);
     }
 
