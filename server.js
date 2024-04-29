@@ -116,7 +116,13 @@ app.post('/newentry', async (req, res) => {
         return res.status(401).send("Provide Token");
     }
 
-    if(!(checkProvidedAccessToken(authToken))){
+    /*if(!(checkProvidedAccessToken(authToken))){
+        return res.sendStatus(401);
+    }*/
+
+    try {
+        checkProvidedAccessToken(authToken)
+    } catch (error) {
         return res.sendStatus(401);
     }
 
