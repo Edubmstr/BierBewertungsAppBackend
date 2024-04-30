@@ -291,7 +291,15 @@ app.get('/calculated', async (req, res) => {
     } catch (error) {
         res.sendStatus(500);
     }    
-}); 
+});
+
+app.post("/logout", (req, res) => {
+    res.clearCookie("refreshToken");
+    //res.clearCookie("userId")
+    return res.json({
+        message: "User logged out"
+    })
+})
 
 app.listen(port, () => {
     console.log(`Example app listening at http://127.0.0.1:${port}`)
