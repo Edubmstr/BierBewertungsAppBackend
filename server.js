@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser';
 import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries, getCalculatedAverage } from './prismatest.js';
 const app = express();
 const router = express.Router();
-app.use(cors({credentials: true, origin: 'http://127.0.0.1:3001'}));
+app.use(cors({credentials: true, origin: 'http://127.0.0.1:3003'}));
 app.use(cookieParser());
 app.use(express.json());
 dotenv.config();
