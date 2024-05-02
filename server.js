@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
 import express from 'express';
 import cors from 'cors';
+import { rateLimit } from 'express-rate-limit'
 import cookieParser from 'cookie-parser';
 import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries, getCalculatedAverage } from './prismatest.js';
 const app = express();
@@ -15,7 +16,11 @@ dotenv.config();
 const port = process.env.PORT 
 const jwtSecretKey = process.env.JWT_SECRET_KEY
 const jwtRefreshSecretKey = process.env.JWT_REFRESH_SECRET_KEY
-
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 100
+})
+app.use(limiter)
 //var adapter = new FileSync("./database.json");
 //var db = low(adapter);
 /*app.use(function(req, res, next) {

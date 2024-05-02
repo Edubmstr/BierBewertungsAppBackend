@@ -92,7 +92,7 @@ Content-Type: application/json
 
 ###
 Get http://127.0.0.1:4050/calculated
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZ3Vlc3QiLCJzaWduSW5UaW1lIjoxNzEzNDYwMzkxOTQ0LCJpYXQiOjE3MTM0NjAzOTMsImV4cCI6MTcxMzQ2MDQ1M30.6P5CVVujfdMjDLHFX-KQkZ3p1hkNuQmFFJtfIkkAeU0
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZ3Vlc3QiLCJzaWduSW5UaW1lIjoxNzE0NjMwNzI1OTU4LCJpYXQiOjE3MTQ2MzA3MjcsImV4cCI6MTcxNDYzMDc4N30.vZ7sLZpQnbL3psbvNP6qDhDVWrYl6XPOUjaaCprkhmY
 
 
 ###
