@@ -108,3 +108,14 @@ Content-Type: application/json
 ###
 Get http://127.0.0.1:4050/calculated
 Authorization: 
+
+
+###
+
+Post https://ida.pistole.sport-iat.de/tpda/public/ajax.php
+Cookie: PHPSESSID=12b8c800af6188423b65a44e03a5c50f
+
+###
+
+get https://ida.pistole.sport-iat.de/api/user/current
+

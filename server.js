@@ -185,7 +185,7 @@ app.post('/validateuser', async (req,res) => {
 
     bcrypt.compare(password, hashedPassword, async function(err, result){
         if (!result){
-            return res.status(403).json({message : "Not authorized"});
+            return res.status(403).json({message : "Wrong password"});
         }else{
             let loginData = {
                 name,
