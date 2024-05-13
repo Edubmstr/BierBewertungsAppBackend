@@ -192,7 +192,7 @@ app.post('/validateuser', async (req,res) => {
                 signInTime: Date.now()
             }
             const userId = await getUserId(name);
-            const token = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10});
+            const token = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10 * 60});
             const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
             res.cookie("refreshtoken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 90000000), secure: true, sameSite: 'none', });
             return res.status(200).json({ message: "Succesfully logged in.", "token" : token, "userId": userId.user_id});
@@ -238,7 +238,7 @@ app.post('/refreshtoken', (req, res) => {
         signInTime: Date.now()
     }
 
-        const accessToken = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10});
+        const accessToken = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10 * 60});
         const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
 
        // res.cookie("refreshToken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 90000000), secure: true, sameSite: 'none'})
