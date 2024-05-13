@@ -5,10 +5,10 @@ import jwt from 'jsonwebtoken'
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries, getCalculatedAverage } from './prismatest.js';
+import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries, getCalculatedAverage, updateReview, deleteReview } from './prismatest.js';
 const app = express();
 const router = express.Router();
-app.use(cors({credentials: true, origin: 'http://127.0.0.1:3001'}));
+app.use(cors({credentials: true, origin: 'http://127.0.0.1:3000'}));
 app.use(cookieParser());
 app.use(express.json());
 dotenv.config();
@@ -187,7 +187,7 @@ app.post('/validateuser', async (req,res) => {
                 signInTime: Date.now()
             }
             const userId = await getUserId(name);
-            const token = jwt.sign(loginData, jwtSecretKey, {expiresIn: 60});
+            const token = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10});
             const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
             res.cookie("refreshtoken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 90000000), secure: true, sameSite: 'none', });
             return res.status(200).json({ message: "Succesfully logged in.", "token" : token, "userId": userId.user_id});
@@ -233,7 +233,7 @@ app.post('/refreshtoken', (req, res) => {
         signInTime: Date.now()
     }
 
-        const accessToken = jwt.sign(loginData, jwtSecretKey, {expiresIn: 60});
+        const accessToken = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10});
         const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
 
         res.cookie("refreshToken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 90000000), secure: true, sameSite: 'none'}).status(200).json({message: "Token refreshed.", token: accessToken})
@@ -291,6 +291,65 @@ app.get('/calculated', async (req, res) => {
         res.sendStatus(500);
     }    
 }); 
+
+app.put('/update', async (req, res) => {
+    const authToken = req.headers.authorization;
+    const body = req.body;
+
+    if(authToken === undefined){
+        return res.status(401).send("Provide Token");
+    }
+
+    try {
+        checkProvidedAccessToken(authToken)
+    } catch (error) {
+        return res.sendStatus(401);
+    }
+
+    if(body.picture_url === undefined){
+        try {
+            const result = await updateReview('data', body);
+            return res.status(200).send({message: "Changes saved.", data : result})
+        } catch (error) {
+            return res.status(500).send({message: "Internal error occured. Changes might not be saved."})
+        }
+       r
+    }else if(!(body.beerName && body.longReview) && !(body.picture_url === undefined)){
+        try {
+            const dataResult = await updateReview('picture', body);
+            return res.status(200).send({message: "New picture saved.", data : dataResult});
+        } catch (error) {
+            console.log(error)
+            return res.status(500).send({message: "Internal error occured. Changes might not be saved."})
+        }
+    }else{
+         res.sendStatus(500)
+    }
+    
+})
+
+app.put('/delete', async (req, res) => {
+    const authToken = req.headers.authorization;
+    const body = req.body;
+
+    if(authToken === undefined){
+        return res.status(401).send("Provide Token");
+    }
+
+    try {
+        checkProvidedAccessToken(authToken)
+    } catch (error) {
+        return res.sendStatus(401);
+    }
+
+    try {
+        const deleteResult = await deleteReview(body.reviewId)
+        return res.status(200).send({message: "Review deleted.", data: deleteResult});
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
+    }
+})
 
 app.listen(port, () => {
     console.log(`Example app listening at http://127.0.0.1:${port}`)
