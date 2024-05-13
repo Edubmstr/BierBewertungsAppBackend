@@ -9,7 +9,7 @@ import cookieParser from 'cookie-parser';
 import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries, getCalculatedAverage, updateReview, deleteReview } from './prismatest.js';
 const app = express();
 const router = express.Router();
-app.use(cors({credentials: true, origin: 'http://127.0.0.1:3000'}));
+app.use(cors({credentials: true, origin: 'https://super-dieffenbachia-8a48cd.netlify.app'}));
 app.use(cookieParser());
 app.use(express.json());
 dotenv.config();
