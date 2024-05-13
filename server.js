@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
 import express from 'express';
 import cors from 'cors';
+import { rateLimit } from 'express-rate-limit'
 import cookieParser from 'cookie-parser';
 import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries, getCalculatedAverage, updateReview, deleteReview } from './prismatest.js';
 const app = express();
@@ -15,7 +16,11 @@ dotenv.config();
 const port = process.env.PORT 
 const jwtSecretKey = process.env.JWT_SECRET_KEY
 const jwtRefreshSecretKey = process.env.JWT_REFRESH_SECRET_KEY
-
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 100
+})
+app.use(limiter)
 //var adapter = new FileSync("./database.json");
 //var db = low(adapter);
 /*app.use(function(req, res, next) {
@@ -180,7 +185,7 @@ app.post('/validateuser', async (req,res) => {
 
     bcrypt.compare(password, hashedPassword, async function(err, result){
         if (!result){
-            return res.status(403).json({message : "Not authorized"});
+            return res.status(403).json({message : "Wrong password"});
         }else{
             let loginData = {
                 name,
@@ -236,7 +241,8 @@ app.post('/refreshtoken', (req, res) => {
         const accessToken = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10});
         const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
 
-        res.cookie("refreshToken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 90000000), secure: true, sameSite: 'none'}).status(200).json({message: "Token refreshed.", token: accessToken})
+       // res.cookie("refreshToken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 90000000), secure: true, sameSite: 'none'})
+        res.status(200).json({message: "Token refreshed.", token: accessToken});
 })
 
 app.get('/latestentries', async (req, res) => {
@@ -290,7 +296,15 @@ app.get('/calculated', async (req, res) => {
     } catch (error) {
         res.sendStatus(500);
     }    
-}); 
+});
+
+app.post("/logout", (req, res) => {
+    res.clearCookie("refreshToken");
+    //res.clearCookie("userId")
+    return res.json({
+        message: "User logged out"
+    })
+})
 
 app.put('/update', async (req, res) => {
     const authToken = req.headers.authorization;
