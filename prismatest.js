@@ -2,12 +2,6 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
-/*async function main() {
-    const allReviews = await prisma.beerReviewData.findMany();
-    //console.log(allReviews);
-    return allReviews;
-}*/
-
  async function getAllReviewData() {
     const allReviews = await prisma.beerReviewData.findMany();
     return allReviews;
@@ -92,6 +86,46 @@ async function groupByBreweryAndName(){
       rating: true
     }
   });
+  return result;
+}
+
+async function updateRow(param, data){
+  switch (param){
+    case 'picture':
+      const resultPicture = await prisma.beerReviews.update({
+        where: {
+          review_id: data.review_id
+        },
+        data:{
+          picture_url: data.picture_url
+        }
+      })
+      return resultPicture;
+    case 'data':
+      const resultData = await prisma.beerReviews.update({
+        where: {
+          review_id: data.review_id
+        },
+        data: {
+        rating: parseFloat(data.rating),
+        longReview: data.longReview,
+        beerName: data.beerName,
+        shortReview: data.shortReview,
+        category: data.category,
+        brewery: data.brewery
+        }
+      })
+      return resultData;
+  }
+    
+}
+
+async function deleteRow(reviewId){
+  const result = await prisma.beerReviews.delete({
+    where: {
+      review_id: reviewId
+    }
+  })
   return result;
 }
 
@@ -219,25 +253,27 @@ export async function getCalculatedAverage(){
     process.exit(1)
   }
 }
-/*main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
 
-  let result = null;*/
-
-  /*try {
-    result = await getAllReviewData();
-    await prisma.$disconnect()
-  } catch (e) {
-    console.error(e)
+export async function deleteReview(reviewId){
+  try {
+    const update = await deleteRow(reviewId);
+    await prisma.$disconnect();
+    return update;
+  } catch (error) {
+    console.log(error);
     await prisma.$disconnect()
     process.exit(1)
   }
-  
-  console.log(result);*/
+}
+
+export async function updateReview(param, data){
+  try {
+    const update = await updateRow(param, data);
+    await prisma.$disconnect();
+    return update;
+  } catch (error) {
+    console.log(error);
+    await prisma.$disconnect()
+    process.exit(1)
+  }
+}

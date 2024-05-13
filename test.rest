@@ -112,10 +112,28 @@ Authorization:
 
 ###
 
+put http://127.0.0.1:4050/update
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZ3Vlc3QiLCJzaWduSW5UaW1lIjoxNzE0OTMwMjIwNDM3LCJpYXQiOjE3MTQ5MzAyMjEsImV4cCI6MTcxNDkzMzgyMX0.b6AXCptQw_zhI4ts1obA9vR0q86063q70xMi0wxu8qY
+Content-Type: application/json
+
+{
+    
+    "picture_url": "Test"
+    
+}
+
+###
+"beerName": "Test",
+    "longReview": "test",
+=======
+
+###
+
 Post https://ida.pistole.sport-iat.de/tpda/public/ajax.php
 Cookie: PHPSESSID=12b8c800af6188423b65a44e03a5c50f
 
 ###
 
 get https://ida.pistole.sport-iat.de/api/user/current
+
 
