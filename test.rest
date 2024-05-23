@@ -92,7 +92,7 @@ Content-Type: application/json
 
 ###
 Get http://127.0.0.1:4050/calculated
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZ3Vlc3QiLCJzaWduSW5UaW1lIjoxNzEzNDYwMzkxOTQ0LCJpYXQiOjE3MTM0NjAzOTMsImV4cCI6MTcxMzQ2MDQ1M30.6P5CVVujfdMjDLHFX-KQkZ3p1hkNuQmFFJtfIkkAeU0
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZ3Vlc3QiLCJzaWduSW5UaW1lIjoxNzE0NjMwNzI1OTU4LCJpYXQiOjE3MTQ2MzA3MjcsImV4cCI6MTcxNDYzMDc4N30.vZ7sLZpQnbL3psbvNP6qDhDVWrYl6XPOUjaaCprkhmY
 
 
 ###
@@ -107,7 +107,7 @@ Content-Type: application/json
 
 ###
 Get http://127.0.0.1:4050/calculated
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZ3Vlc3QiLCJzaWduSW5UaW1lIjoxNzE1NzkwMzI4MDY0LCJpYXQiOjE3MTU3OTAzMjksImV4cCI6MTcxNTc5MDMzOX0.sIkw8tu5appO7V1etD7HfMXfJ6lPF5bGg-PsU_mq9MI
+Authorization: 
 
 ###
 
@@ -124,24 +124,3 @@ Content-Type: application/json
 ###
 "beerName": "Test",
     "longReview": "test",
-###
-
-post http://127.0.0.1:4050/rating
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZ3Vlc3QiLCJzaWduSW5UaW1lIjoxNzE1ODYwNzM4MzA5LCJpYXQiOjE3MTU4NjA3MzksImV4cCI6MTcxNTg2MTMzOX0.FX4EOzx3c_AKy9MMyYVVdVzbNMRmEqIcVTCPpNK6hS0
-Content-Type: application/json
-
-{
-    "reviewId" : "46",
-    "rating" : "10"
-}
-
-###
-
-
-get http://127.0.0.1:4050/ratings/46
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZ3Vlc3QiLCJzaWduSW5UaW1lIjoxNzE1ODYwNzM4MzA5LCJpYXQiOjE3MTU4NjA3MzksImV4cCI6MTcxNTg2MTMzOX0.FX4EOzx3c_AKy9MMyYVVdVzbNMRmEqIcVTCPpNK6hS0
-
-###
-
-get http://127.0.0.1:4050/getdata
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZ3Vlc3QiLCJzaWduSW5UaW1lIjoxNzE1NzkwNjEwMzk3LCJpYXQiOjE3MTU3OTA2MTEsImV4cCI6MTcxNTc5MTIxMX0.ztEx9nHx4cl8Q-j6FqaIBVuhpKkNfeIpOA946joEtGQ
