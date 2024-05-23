@@ -129,6 +129,25 @@ async function deleteRow(reviewId){
   return result;
 }
 
+async function setRating(rating, review_id){
+  const result = await prisma.beerRatings.create({
+    data: {
+      review_id: review_id,
+      rating: rating
+    }
+  })
+  return result;
+}
+
+async function selectRatings(review_id){
+  const result = await prisma.beerRatings.findMany({
+    where: {
+      review_id: review_id
+    }
+  })
+  return result;
+}
+
 export async function getAllReviews() {
     let result = null;
     try {
@@ -271,6 +290,30 @@ export async function updateReview(param, data){
     const update = await updateRow(param, data);
     await prisma.$disconnect();
     return update;
+  } catch (error) {
+    console.log(error);
+    await prisma.$disconnect()
+    process.exit(1)
+  }
+}
+
+export async function newRating(rating, review_id){
+  try {
+    const ratingResult = await setRating(rating, review_id);
+    await prisma.$disconnect();
+    return ratingResult;
+  } catch (error) {
+    console.log(error);
+    await prisma.$disconnect()
+    process.exit(1)
+  }
+}
+
+export async function getRatings(review_id){
+  try {
+    const ratings = await selectRatings(review_id);
+    await prisma.$disconnect();
+    return ratings;
   } catch (error) {
     console.log(error);
     await prisma.$disconnect()

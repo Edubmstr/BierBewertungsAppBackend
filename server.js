@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries, getCalculatedAverage, updateReview, deleteReview } from './prismatest.js';
+import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries, getCalculatedAverage, updateReview, deleteReview, getRatings, newRating } from './prismatest.js';
 const app = express();
 const router = express.Router();
 app.use(cors({credentials: true, origin: 'http://127.0.0.1:3000'}));
@@ -33,6 +33,7 @@ const pool = mysql.createPool(
 );
 
 function checkProvidedAccessToken(token){
+    debugger;
     return jwt.verify(token, jwtSecretKey);
 }
 
@@ -187,7 +188,7 @@ app.post('/validateuser', async (req,res) => {
                 signInTime: Date.now()
             }
             const userId = await getUserId(name);
-            const token = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10});
+            const token = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10 * 60});
             const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
             res.cookie("refreshtoken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 90000000), secure: true, sameSite: 'none', });
             return res.status(200).json({ message: "Succesfully logged in.", "token" : token, "userId": userId.user_id});
@@ -233,7 +234,7 @@ app.post('/refreshtoken', (req, res) => {
         signInTime: Date.now()
     }
 
-        const accessToken = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10});
+        const accessToken = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10 * 60});
         const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
 
         res.cookie("refreshToken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 90000000), secure: true, sameSite: 'none'}).status(200).json({message: "Token refreshed.", token: accessToken})
@@ -345,6 +346,52 @@ app.put('/delete', async (req, res) => {
     try {
         const deleteResult = await deleteReview(body.reviewId)
         return res.status(200).send({message: "Review deleted.", data: deleteResult});
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
+    }
+})
+
+app.post('/rating', async (req, res) => {
+    const authToken = req.headers.authorization;
+    const body = req.body;
+
+    if(authToken === undefined){
+        return res.status(401).send("Provide Token");
+    }
+
+    try {
+        checkProvidedAccessToken(authToken)
+    } catch (error) {
+        return res.sendStatus(401);
+    }
+
+    try {
+        const newrating = await newRating(parseInt(body.rating), parseInt(body.reviewId));
+        return res.status(200).send({message: "Rating saved."});
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
+    }
+})
+
+app.get('/ratings/:id', async (req, res) => {
+    const authToken = req.headers.authorization;
+    const reviewId = parseInt(req.params.id);
+
+    if(authToken === undefined){
+        return res.status(401).send("Provide Token");
+    }
+
+    try {
+        checkProvidedAccessToken(authToken)
+    } catch (error) {
+        return res.sendStatus(401);
+    }
+
+    try {
+        const ratings = await getRatings(reviewId);
+        return res.status(200).json(ratings);
     } catch (error) {
         console.log(error)
         return res.sendStatus(500)

@@ -16,19 +16,29 @@ model beerAppUser {
 }
 
 model beerReviews {
-  review_id          Int          @id @unique(map: "id") @default(autoincrement())
-  rating             Float?       @db.Float
-  longReview         String?      @db.Text
-  beerName           String?      @db.Text
-  created_at         DateTime     @default(now()) @db.Timestamp(0)
-  shortReview        String?      @db.Text
-  picture_url        String?      @db.Text
-  category           String?      @db.Text
-  brewery            String?      @db.Text
+  review_id          Int           @id @unique(map: "id") @default(autoincrement())
+  rating             Float?        @db.Float
+  longReview         String?       @db.Text
+  beerName           String?       @db.Text
+  created_at         DateTime      @default(now()) @db.Timestamp(0)
+  shortReview        String?       @db.Text
+  picture_url        String?       @db.Text
+  category           String?       @db.Text
+  brewery            String?       @db.Text
   created_by_user_id Int?
-  beerAppUser        beerAppUser? @relation(fields: [created_by_user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "beerReviews_beerAppUser_FK")
+  beerRatings        beerRatings[]
+  beerAppUser        beerAppUser?  @relation(fields: [created_by_user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "beerReviews_beerAppUser_FK")
 
   @@index([created_by_user_id], map: "beerReviews_beerAppUser_FK")
+}
+
+model beerRatings {
+  rating_id   Int         @id @default(autoincrement())
+  review_id   Int
+  rating      Int?
+  beerReviews beerReviews @relation(fields: [review_id], references: [review_id], onDelete: NoAction, onUpdate: NoAction, map: "beerRatings_beerReviews_FK")
+
+  @@index([review_id], map: "beerRatings_beerReviews_FK")
 }
 
 view beerReviewData {
