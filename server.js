@@ -12,8 +12,9 @@ const router = express.Router();
 app.use(cors({credentials: true, origin: 'https://super-dieffenbachia-8a48cd.netlify.app'}));
 app.use(cookieParser());
 app.use(express.json());
+app.set('trust proxy', 1);
 dotenv.config();
-const port = process.env.PORT 
+const port = process.env.PORT
 const jwtSecretKey = process.env.JWT_SECRET_KEY
 const jwtRefreshSecretKey = process.env.JWT_REFRESH_SECRET_KEY
 const limiter = rateLimit({
