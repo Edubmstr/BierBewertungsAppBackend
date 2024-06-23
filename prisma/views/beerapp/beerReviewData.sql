@@ -4,7 +4,6 @@ SELECT
   `beerapp`.`beerReviews`.`longReview` AS `longReview`,
   `beerapp`.`beerReviews`.`beerName` AS `beerName`,
   `beerapp`.`beerReviews`.`created_at` AS `created_at`,
-  `beerapp`.`beerReviews`.`changed_at` AS `changed_at`,
   `beerapp`.`beerReviews`.`shortReview` AS `shortReview`,
   `beerapp`.`beerReviews`.`picture_url` AS `picture_url`,
   `beerapp`.`beerReviews`.`category` AS `category`,
