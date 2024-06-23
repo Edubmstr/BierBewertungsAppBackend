@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import mysql from 'mysql2';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
 import express from 'express';
@@ -7,9 +6,10 @@ import cors from 'cors';
 import { rateLimit } from 'express-rate-limit'
 import cookieParser from 'cookie-parser';
 import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries, getCalculatedAverage, updateReview, deleteReview } from './prismatest.js';
+import { formatInTimeZone } from 'date-fns-tz'
 const app = express();
 const router = express.Router();
-app.use(cors({credentials: true, origin: 'https://super-dieffenbachia-8a48cd.netlify.app'}));
+app.use(cors({credentials: true, origin: ['https://super-dieffenbachia-8a48cd.netlify.app', 'http://127.0.0.1:3000']}));
 app.use(cookieParser());
 app.use(express.json());
 app.set('trust proxy', 1);
@@ -19,24 +19,31 @@ const jwtSecretKey = process.env.JWT_SECRET_KEY
 const jwtRefreshSecretKey = process.env.JWT_REFRESH_SECRET_KEY
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    limit: 100
+    limit: 150
 })
 app.use(limiter)
-//var adapter = new FileSync("./database.json");
-//var db = low(adapter);
-/*app.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Credentials', true);
-    res.header(
-        'Access-Control-Allow-Headers',
-        'Origin, X-Requested-With, Content-Type, Accept'
-    );
-    next();
-});*/
 
-const pool = mysql.createPool(
-    process.env.DATABASE_URL
-);
+let now;
+let lastChangedAt;
+
+function updateLastChangedAt(){
+    now = new Date();
+    lastChangedAt  = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+}
+
+function initialiseCachingHeaders(){
+    updateLastChangedAt();
+    console.log(now);
+}
+
+initialiseCachingHeaders();
+
+app.use((req, res, next) => {
+
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Last-modified', now);
+    next();
+})
 
 function checkProvidedAccessToken(token){
     return jwt.verify(token, jwtSecretKey);
@@ -60,16 +67,21 @@ app.get('/getdata', async (req, res) => {
         return res.sendStatus(401);
     }
 
+    if (new Date(req.headers['if-modified-since']) <= now) {
+       // console.log('If-Modified-Since match, sending 304');
+       return res.sendStatus(304);
+      }
+
     try {
         const resultData = await getAllReviews();
-        res.send(resultData); 
+        res.send(resultData);
     } catch (error) {
         res.sendStatus(500);
     }
     
 });  
 
-app.post('/userreviews', async (req, res) => {
+app.get('/userreviews/:user_id', async (req, res) => {
 
     const authToken = req.headers.authorization;
 
@@ -82,16 +94,21 @@ app.post('/userreviews', async (req, res) => {
     } catch (error) {
         return res.sendStatus(401);
     }
+
+    if (new Date(req.headers['if-modified-since']) <= lastChangedAt) {
+        // console.log('If-Modified-Since match, sending 304');
+        return res.sendStatus(304);
+    }
     
     try {
-        const resultData = await getUserReviews(req.body.user_id);
+        const resultData = await getUserReviews(parseInt(req.params["user_id"]));
         res.send(resultData)
     } catch (error) {
         res.sendStatus(500);
     }
 });  
 
-app.post('/getentry', async (req, res) => {
+app.get('/getentry/:id', async (req, res) => {
 
     const authToken = req.headers.authorization;
 
@@ -105,8 +122,13 @@ app.post('/getentry', async (req, res) => {
         return res.sendStatus(401);
     }
 
+    if (new Date(req.headers['if-modified-since']) <= lastChangedAt) {
+        // console.log('If-Modified-Since match, sending 304');
+        return res.sendStatus(304);
+       }
+
     try {
-        const resultData = await getSingleReviews(req.body.id);
+        const resultData = await getSingleReviews(parseInt(req.params["id"]));
         res.send(resultData)
     } catch (error) {
         res.sendStatus(500);
@@ -122,10 +144,6 @@ app.post('/newentry', async (req, res) => {
         return res.status(401).send("Provide Token");
     }
 
-    /*if(!(checkProvidedAccessToken(authToken))){
-        return res.sendStatus(401);
-    }*/
-
     try {
         checkProvidedAccessToken(authToken)
     } catch (error) {
@@ -134,6 +152,7 @@ app.post('/newentry', async (req, res) => {
 
     try {
         const resultData = await createNewReview(req.body);
+        updateLastChangedAt();
         res.send(resultData);
     } catch (error) {
         res.sendStatus(500);
@@ -201,25 +220,6 @@ app.post('/validateuser', async (req,res) => {
     })
 });
 
-/*app.post('/verifytoken', (req, res) => {
-    const tokenHeaderKey = "jwt-token";
-    const authToken = req.headers.authorization;
-    try {
-        const verified = jwt.verify(authToken, jwtSecretKey);
-        if (verified) {
-          return res
-            .status(200)
-            .json({ status: "logged in", message: "success" });
-        } else {
-          // Access Denied
-          return res.status(401).json({ status: "invalid auth", message: "error" });
-        }
-      } catch (error) {
-        // Access Denied
-        return res.status(401).json({ status: "invalid auth", message: "error" });
-      }
-})*/
-
 app.post('/refreshtoken', (req, res) => {
     const {userName} = req.body;
 
@@ -242,7 +242,6 @@ app.post('/refreshtoken', (req, res) => {
         const accessToken = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10 * 60});
         const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
 
-       // res.cookie("refreshToken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 90000000), secure: true, sameSite: 'none'})
         res.status(200).json({message: "Token refreshed.", token: accessToken});
 })
 
@@ -259,18 +258,19 @@ app.get('/latestentries', async (req, res) => {
     } catch (error) {
         return res.sendStatus(401);
     }
-    /*
-    if(!(checkProvidedAccessToken(authToken))){
-        return res.sendStatus(401);
-    }*/
+
+    if (new Date(req.headers['if-modified-since']) <= lastChangedAt) {
+        // console.log('If-Modified-Since match, sending 304');
+        return res.sendStatus(304);
+       }
 
     try {
         const resultData = await getLatestEntries();
         return res.send(resultData)
     } catch (error) {
         res.sendStatus(500);
-    }    
-}); 
+    }
+});
 
 app.get('/calculated', async (req, res) => {
     
@@ -287,16 +287,17 @@ app.get('/calculated', async (req, res) => {
         return res.sendStatus(401);
     }
 
-    /*if(!(checkProvidedAccessToken(authToken))){
-        return res.sendStatus(401);
-    }*/
+    if (new Date(req.headers['if-modified-since']) <= lastChangedAt) {
+        // console.log('If-Modified-Since match, sending 304');
+        return res.sendStatus(304);
+       }
     
     try {
         const resultData = await getCalculatedAverage();
         res.send(resultData)
     } catch (error) {
         res.sendStatus(500);
-    }    
+    }
 });
 
 app.post("/logout", (req, res) => {
@@ -324,6 +325,7 @@ app.put('/update', async (req, res) => {
     if(body.picture_url === undefined){
         try {
             const result = await updateReview('data', body);
+            updateLastChangedAt()
             return res.status(200).send({message: "Changes saved.", data : result})
         } catch (error) {
             return res.status(500).send({message: "Internal error occured. Changes might not be saved."})
@@ -332,6 +334,7 @@ app.put('/update', async (req, res) => {
     }else if(!(body.beerName && body.longReview) && !(body.picture_url === undefined)){
         try {
             const dataResult = await updateReview('picture', body);
+            updateLastChangedAt()
             return res.status(200).send({message: "New picture saved.", data : dataResult});
         } catch (error) {
             console.log(error)
@@ -359,6 +362,7 @@ app.put('/delete', async (req, res) => {
 
     try {
         const deleteResult = await deleteReview(body.reviewId)
+        updateLastChangedAt()
         return res.status(200).send({message: "Review deleted.", data: deleteResult});
     } catch (error) {
         console.log(error)
@@ -366,7 +370,10 @@ app.put('/delete', async (req, res) => {
     }
 })
 
+app.get('/test', (req,res) => {
+    res.sendStatus(304);
+})
+
 app.listen(port, () => {
     console.log(`Example app listening at http://127.0.0.1:${port}`)
 });
-
