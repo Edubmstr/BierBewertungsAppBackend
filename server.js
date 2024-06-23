@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser';
 import { getAllReviews, getSingleReviews, getUserReviews, createNewReview, createNewUser, checkIfUserNameExists, getUserPassword, getUserId, getLatestEntries, getCalculatedAverage, updateReview, deleteReview } from './prismatest.js';
 const app = express();
 const router = express.Router();
-app.use(cors({credentials: true, origin: ['https://super-dieffenbachia-8a48cd.netlify.app', 'http://127.0.0.1:3000']}));
+app.use(cors({credentials: true, origin: ['https://super-dieffenbachia-8a48cd.netlify.app', 'http://127.0.0.1:3000', 'https://beerapp.apidevelopment.de']}));
 app.use(cookieParser());
 app.use(express.json());
 app.set('trust proxy', 1);
@@ -211,7 +211,7 @@ app.post('/validateuser', async (req,res) => {
                 signInTime: Date.now()
             }
             const userId = await getUserId(name);
-            const token = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10 * 5});
+            const token = jwt.sign(loginData, jwtSecretKey, {expiresIn: 5 * 60});
             const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
             res.cookie("refreshtoken", refreshToken, {httpOnly: true, expires: new Date(Date.now() + 900000), secure: true, sameSite: 'none', });
             return res.status(200).json({ message: "Succesfully logged in.", "token" : token, "userId": userId.user_id});
@@ -238,7 +238,7 @@ app.post('/refreshtoken', (req, res) => {
         signInTime: Date.now()
     }
 
-        const accessToken = jwt.sign(loginData, jwtSecretKey, {expiresIn: 10 * 5});
+        const accessToken = jwt.sign(loginData, jwtSecretKey, {expiresIn: 5 * 60});
         const refreshToken = jwt.sign(loginData, jwtRefreshSecretKey);
 
         res.status(200).json({message: "Token refreshed.", token: accessToken});
