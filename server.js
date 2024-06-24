@@ -23,11 +23,9 @@ const limiter = rateLimit({
 app.use(limiter)
 
 let now;
-let lastChangedAt;
 
 function updateLastChangedAt(){
     now = new Date();
-    lastChangedAt  = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 }
 
 function initialiseCachingHeaders(){
@@ -94,7 +92,7 @@ app.get('/userreviews/:user_id', async (req, res) => {
         return res.sendStatus(401);
     }
 
-    if (new Date(req.headers['if-modified-since']) <= lastChangedAt) {
+    if (new Date(req.headers['if-modified-since']) <= now) {
         // console.log('If-Modified-Since match, sending 304');
         return res.sendStatus(304);
     }
@@ -121,7 +119,7 @@ app.get('/getentry/:id', async (req, res) => {
         return res.sendStatus(401);
     }
 
-    if (new Date(req.headers['if-modified-since']) <= lastChangedAt) {
+    if (new Date(req.headers['if-modified-since']) <= now) {
         // console.log('If-Modified-Since match, sending 304');
         return res.sendStatus(304);
        }
@@ -258,7 +256,7 @@ app.get('/latestentries', async (req, res) => {
         return res.sendStatus(401);
     }
 
-    if (new Date(req.headers['if-modified-since']) <= lastChangedAt) {
+    if (new Date(req.headers['if-modified-since']) <= now) {
         // console.log('If-Modified-Since match, sending 304');
         return res.sendStatus(304);
        }
@@ -286,7 +284,7 @@ app.get('/calculated', async (req, res) => {
         return res.sendStatus(401);
     }
 
-    if (new Date(req.headers['if-modified-since']) <= lastChangedAt) {
+    if (new Date(req.headers['if-modified-since']) <= now) {
         // console.log('If-Modified-Since match, sending 304');
         return res.sendStatus(304);
        }
