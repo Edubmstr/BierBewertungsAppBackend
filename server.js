@@ -64,7 +64,7 @@ app.get('/getdata', async (req, res) => {
         return res.sendStatus(401);
     }
 
-    if (new Date(req.headers['if-modified-since']) <= now) {
+    if (new Date(req.headers['if-modified-since']) >= now) {
        // console.log('If-Modified-Since match, sending 304');
        return res.sendStatus(304);
       }
@@ -92,7 +92,7 @@ app.get('/userreviews/:user_id', async (req, res) => {
         return res.sendStatus(401);
     }
 
-    if (new Date(req.headers['if-modified-since']) <= now) {
+    if (new Date(req.headers['if-modified-since']) >= now) {
         // console.log('If-Modified-Since match, sending 304');
         return res.sendStatus(304);
     }
@@ -119,7 +119,7 @@ app.get('/getentry/:id', async (req, res) => {
         return res.sendStatus(401);
     }
 
-    if (new Date(req.headers['if-modified-since']) <= now) {
+    if (new Date(req.headers['if-modified-since']) >= now) {
         // console.log('If-Modified-Since match, sending 304');
         return res.sendStatus(304);
        }
@@ -256,7 +256,7 @@ app.get('/latestentries', async (req, res) => {
         return res.sendStatus(401);
     }
 
-    if (new Date(req.headers['if-modified-since']) <= now) {
+    if (new Date(req.headers['if-modified-since']) >= now) {
         // console.log('If-Modified-Since match, sending 304');
         return res.sendStatus(304);
        }
@@ -284,7 +284,7 @@ app.get('/calculated', async (req, res) => {
         return res.sendStatus(401);
     }
 
-    if (new Date(req.headers['if-modified-since']) <= now) {
+    if (new Date(req.headers['if-modified-since']) >= now) {
         // console.log('If-Modified-Since match, sending 304');
         return res.sendStatus(304);
        }
